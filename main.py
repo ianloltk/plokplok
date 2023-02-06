@@ -1,0 +1,84 @@
+import random
+import termcolor
+from termcolor import colored
+import os
+import sys
+import importlib
+import requests
+
+class CryptoCoin:
+    def __init__(self, name, initial_value):
+        self.name = name
+        self._value = initial_value
+        self._owned = 0
+
+    def update_value(self):
+        self._value *= (1 + random.gauss(0, 0.01))
+        return self._value
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def owned(self):
+        return self._owned
+
+# Initialize the crypto coin with name "CryptoCoin" and initial value of 100
+coin = CryptoCoin("CryptoCoin", 3000)
+
+# Initial budget of 1000
+budget = 10000000000
+
+# Dictionary of custom commands
+custom_commands = {}
+
+# Load all commands from the commands folder
+for filename in os.listdir("commands"):
+    if filename.endswith(".py"):
+        module_name = filename[:-3]
+        module = importlib.import_module(f"commands.{module_name}")
+        custom_commands[module_name] = module.run
+
+def compare_files(local_file_path, remote_file_url):
+    # Read the contents of the local file
+    with open(local_file_path, 'r') as f:
+        local_file_contents = f.read()
+
+    # Read the contents of the file from the URL
+    response = requests.get(remote_file_url)
+    remote_file_contents = response.text
+
+    # Compare the contents of the two files
+    if local_file_contents == remote_file_contents:
+        print("The files are the same.")
+        # Jump to the line of code and start from there
+        return True
+    else:
+        print("The files are different.")
+        return False
+
+if compare_files('main.py', 'https://raw.githubusercontent.com/ianloltk/plokplok/main/main.py'):
+    # Start the loop
+    while True:
+    
+    # Update the value of the coin
+     coin.update_value()
+
+     # Display the current value of the coin and budget
+     print(f"Coin value: {termcolor.colored(coin.value, 'green')} | Budget: ${termcolor.colored(format(budget, ','), 'yellow')} | Coins owned: {termcolor.colored(coin.owned, 'blue')}")
+
+     # Ask the user for the action they want to perform
+     action = input("What would you like to do? (buy/sell/quit): ")
+
+     if action == "quit":
+        break
+
+    # Split the action into command and argument
+    action_split = action.split(" ")
+    command = action_split[0]
+    argument = None if len(action_split) < 2 else int(action_split[1])
+
+    # If the user enters a custom command
+    if command in custom_commands:
+        budget = custom_commands[command](coin, budget, argument)
