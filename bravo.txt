@@ -58,7 +58,7 @@ def compare_files(local_file_path, remote_file_url):
         print("The files are different.")
         return False
 
-if compare_files('main.py', 'https://gist.githubusercontent.com/ianloltk/5245be37dfb29636abe3cd3d38466265/raw/52f8e0a6b1757f91078504579112cda4047185fd/bruh.txt'):
+if compare_files('main.py', 'https://github.com/ianloltk/plokplok/blob/main/bravo.txt'):
     # Start the loop
     while True:
     
